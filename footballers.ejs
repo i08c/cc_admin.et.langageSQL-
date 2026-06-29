@@ -1,0 +1,71 @@
+<%- include('layout', { body: `
+    <div class="space-y-6">
+        <div class="bg-white p-4 rounded-lg shadow border border-gray-200 flex items-center justify-between">
+            <form action="/footballers" method="GET" class="w-full max-w-md flex gap-2">
+                <input type="text" name="search" value="${search}" placeholder="Rechercher par initiale (ex: M...)" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-900">Rechercher</button>
+                ${search ? \`<a href="/footballers" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-200 flex items-center">Réinitialiser</a>\` : ''}
+            </form>
+        </div>
+    
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow border border-gray-200 h-fit">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">${editFootballer ? 'Modifier la Fiche Joueur' : 'Ajouter un Joueur'}</h2>
+                <form action="${editFootballer ? '/footballers/update/' + editFootballer.id : '/footballers/add'}" method="POST" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Prénom</label>
+                        <input type="text" name="prenom" value="${editFootballer ? editFootballer.prenom : ''}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input type="text" name="nom" value="${editFootballer ? editFootballer.nom : ''}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Affectation Club</label>
+                        <select name="id_club" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                            <option value="">-- Aucun Club --</option>
+                            ${clubs.map(club => `
+                                <option value="${club.id}" ${editFootballer && editFootballer.id_club === club.id ? 'selected' : ''}>${club.nom_club}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        ${editFootballer ? \`<a href="/footballers" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300">Annuler</a>\` : ''}
+                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm">${editFootballer ? 'Enregistrer' : 'Créer'}</button>
+                    </div>
+                </form>
+            </div>
+    
+            <div class="lg:col-span-2">
+                <div class="bg-white shadow border border-gray-200 sm:rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joueur</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Club actuel</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            ${footballers.map(player => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">${player.nom}</div>
+                                    <div class="text-sm text-gray-500">${player.prenom}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${player.nom_club ? \`<span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">\${player.nom_club}</span>\` : '<span class="text-gray-400 italic">Sans club</span>'}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                    <a href="/footballers/edit/${player.id}" class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                    <a href="/footballers/delete/${player.id}" onclick="return confirm('Confirmer la suppression définitive de ce joueur ?')" class="text-red-600 hover:text-red-900">Supprimer</a>
+                                </td>
+                            </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    ` }) %>
